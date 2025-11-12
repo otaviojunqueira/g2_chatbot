@@ -53,14 +53,24 @@ BASE_URL = f"https://api.z-api.io/instances/{INSTANCE}/token/{TOKEN}"
 # Função para enviar mensagem via Z-API
 def enviar_msg(numero, texto):
     url = f"{BASE_URL}/send-message"
-    payload = {"phone": numero, "message": texto}
-    print("📤 Enviando mensagem:", payload)
+    payload = {
+        "phone": numero,
+        "message": texto
+    }
+
+    print("📤 Tentando enviar mensagem via Z-API...")
+    print("➡️ URL:", url)
+    print("➡️ Payload:", payload)
+
     try:
         resp = requests.post(url, json=payload, timeout=10)
+        print("🔁 Resposta da Z-API:", resp.status_code, resp.text)
         resp.raise_for_status()
-        print("✅ Mensagem enviada com sucesso:", resp.json())
+        print("✅ Mensagem enviada com sucesso!")
+    except requests.exceptions.HTTPError as http_err:
+        print("🚨 Erro HTTP:", http_err)
     except Exception as e:
-        print("🚨 Erro ao enviar mensagem:", e)
+        print("🚨 Erro geral ao enviar mensagem:", e)
 
 # Rota principal para evitar erro 404
 @app.route("/", methods=["GET"])
