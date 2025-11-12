@@ -251,7 +251,7 @@ if not INSTANCE or not TOKEN:
 
 # Função para enviar mensagem via Z-API
 def enviar_msg(numero, texto):
-    url = f"{BASE_URL}/send-message"
+    url = f"{BASE_URL}/send-text"
     payload = {
         "phone": numero,
         "message": texto
