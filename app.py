@@ -50,6 +50,12 @@ INSTANCE = os.environ.get("ZAPI_INSTANCE")
 TOKEN = os.environ.get("ZAPI_TOKEN")
 BASE_URL = f"https://api.z-api.io/instances/{INSTANCE}/token/{TOKEN}"
 
+# Validação das credenciais na inicialização
+if not INSTANCE or not TOKEN:
+    print("🚨 ERRO: As variáveis de ambiente ZAPI_INSTANCE e ZAPI_TOKEN não foram configuradas.")
+    print("🚨 O aplicativo não pode iniciar sem as credenciais.")
+    exit() # Impede a execução do app se as credenciais estiverem ausentes
+
 # Função para enviar mensagem via Z-API
 def enviar_msg(numero, texto):
     url = f"{BASE_URL}/send-message"
@@ -85,25 +91,36 @@ def health():
 # Webhook que recebe mensagens do Z-API
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.get_json(force=True)
-    print("📩 Payload recebido:", data)
-
     try:
+        data = request.get_json()
+        if not data:
+            print("⚠️ Webhook recebido, mas sem payload JSON.")
+            return "ignorado", 200
+            
+        print("📩 Payload recebido:", data)
+
+        # Z-API pode enviar diferentes tipos de eventos. Ignoramos os que não são mensagens.
+        if data.get("isGroup") or not data.get("text"):
+            print("🚫 Ignorando mensagem de grupo ou evento sem texto.")
+            return "ignorado", 200
+
         numero = data.get("phone")
-        texto = data.get("message")
+        texto = data.get("text", {}).get("message") # A mensagem vem dentro de "text"
 
         print(f"📞 Número: {numero} | ✉️ Texto: {texto}")
 
         if not numero or not texto:
-            print("⚠️ Número ou texto ausente")
+            print("⚠️ Número ou texto ausente no payload.")
             return "ignorado", 200
 
+        # Lógica do fluxo do chatbot
         estado = user_states.get(numero, "inicio")
         no = fluxo.get(estado, fluxo["inicio"])
         print(f"🔄 Estado atual: {estado}")
 
-        if texto in no.get("opcoes", {}):
-            prox = no["opcoes"][texto]
+        opcoes_validas = no.get("opcoes", {})
+        if texto.strip() in opcoes_validas:
+            prox = opcoes_validas[texto.strip()]
             user_states[numero] = prox
             print(f"➡️ Próximo estado: {prox}")
             enviar_msg(numero, fluxo[prox]["mensagem"])
@@ -112,7 +129,7 @@ def webhook():
             enviar_msg(numero, "Opção inválida. Tente novamente:\n\n" + no["mensagem"])
 
     except Exception as e:
-        print("🚨 Erro no webhook:", e)
+        print(f"🚨 Erro crítico no processamento do webhook: {e}")
 
     return "ok", 200
 
