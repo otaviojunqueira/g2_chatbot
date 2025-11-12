@@ -70,13 +70,40 @@ def enviar_msg(numero, texto):
 
     try:
         resp = requests.post(url, json=payload, timeout=10)
-        print("🔁 Resposta da Z-API:", resp.status_code, resp.text)
-        resp.raise_for_status()
-        print("✅ Mensagem enviada com sucesso!")
+        print("🔁 Resposta da Z-API (Status):", resp.status_code)
+        print("🔁 Resposta da Z-API (Corpo):", resp.text)
+
+        if resp.status_code == 200:
+            try:
+                response_json = resp.json()
+                if response_json.get("error"):
+                    print(f"🚨 Erro reportado pela Z-API: {response_json.get('error')} - {response_json.get('message')}")
+                    return False # Indica falha no envio
+                elif response_json.get("id"): # Z-API geralmente retorna um ID para mensagens bem-sucedidas
+                    print("✅ Mensagem enviada com sucesso!")
+                    return True # Indica sucesso no envio
+                else:
+                    print("⚠️ Resposta da Z-API 200 OK, mas formato inesperado:", response_json)
+                    return False
+            except requests.exceptions.JSONDecodeError:
+                print("⚠️ Resposta da Z-API 200 OK, mas não é JSON válido.")
+                return False
+        else:
+            resp.raise_for_status() # Isso levantará uma exceção para 4xx/5xx
+            return True # Se raise_for_status não levantou, é um status 2xx diferente de 200
     except requests.exceptions.HTTPError as http_err:
-        print("🚨 Erro HTTP:", http_err)
+        print(f"🚨 Erro HTTP ao enviar mensagem: {http_err}")
+        print(f"🚨 Resposta do servidor (se disponível): {http_err.response.text if http_err.response else 'N/A'}")
+        return False
+    except requests.exceptions.ConnectionError as conn_err:
+        print(f"🚨 Erro de conexão ao enviar mensagem: {conn_err}")
+        return False
+    except requests.exceptions.Timeout as timeout_err:
+        print(f"🚨 Tempo limite excedido ao enviar mensagem: {timeout_err}")
+        return False
     except Exception as e:
-        print("🚨 Erro geral ao enviar mensagem:", e)
+        print(f"🚨 Erro geral ao enviar mensagem: {e}")
+        return False
 
 # Rota principal para evitar erro 404
 @app.route("/", methods=["GET"])
@@ -125,8 +152,11 @@ def webhook():
             print(f"➡️ Próximo estado: {prox}")
             enviar_msg(numero, fluxo[prox]["mensagem"])
         else:
-            print("❌ Opção inválida, reenviando menu atual")
-            enviar_msg(numero, "Opção inválida. Tente novamente:\n\n" + no["mensagem"])
+            # Se a opção for inválida ou o estado foi perdido, reinicia a conversa.
+            print("❌ Opção inválida ou estado perdido. Reiniciando fluxo.")
+            user_states[numero] = "inicio" # Reseta o estado
+            mensagem_inicial = fluxo["inicio"]["mensagem"]
+            enviar_msg(numero, "Opção inválida. Vamos tentar de novo do começo, ok?\n\n" + mensagem_inicial)
 
     except Exception as e:
         print(f"🚨 Erro crítico no processamento do webhook: {e}")
