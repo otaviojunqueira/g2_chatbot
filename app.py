@@ -241,11 +241,12 @@ fluxo = {
 # Credenciais do Z-API (configure no Render)
 INSTANCE = os.environ.get("ZAPI_INSTANCE")
 TOKEN = os.environ.get("ZAPI_TOKEN")
+CLIENT_TOKEN = os.environ.get("ZAPI_CLIENT_TOKEN") # Novo token de cliente
 BASE_URL = f"https://api.z-api.io/instances/{INSTANCE}/token/{TOKEN}"
 
 # Validação das credenciais na inicialização
-if not INSTANCE or not TOKEN:
-    print("🚨 ERRO: As variáveis de ambiente ZAPI_INSTANCE e ZAPI_TOKEN não foram configuradas.")
+if not INSTANCE or not TOKEN or not CLIENT_TOKEN:
+    print("🚨 ERRO: Uma ou mais variáveis de ambiente (ZAPI_INSTANCE, ZAPI_TOKEN, ZAPI_CLIENT_TOKEN) não foram configuradas.")
     print("🚨 O aplicativo não pode iniciar sem as credenciais.")
     exit() # Impede a execução do app se as credenciais estiverem ausentes
 
@@ -256,6 +257,9 @@ def enviar_msg(numero, texto):
         "phone": numero,
         "message": texto
     }
+    headers = {
+        "Client-Token": CLIENT_TOKEN
+    }
 
     print("📤 Tentando enviar mensagem via Z-API...")
     print("➡️ URL:", url)
@@ -263,7 +267,7 @@ def enviar_msg(numero, texto):
 
     response = None  # Inicializa a variável de resposta
     try:
-        response = requests.post(url, json=payload, timeout=10)
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
         response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
 
         print("🔁 Resposta da Z-API (Status):", response.status_code)
