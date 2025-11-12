@@ -309,8 +309,8 @@ def webhook():
             
         print("📩 Payload recebido:", data)
 
-        # Z-API pode enviar diferentes tipos de eventos. Ignoramos os que não são mensagens.
-        if data.get("isGroup") or not data.get("text"):
+        # Ignora mensagens enviadas pelo próprio bot, de grupos ou eventos sem texto.
+        if data.get("fromMe") or data.get("isGroup") or not data.get("text"):
             print("🚫 Ignorando mensagem de grupo ou evento sem texto.")
             return "ignorado", 200
 
@@ -335,11 +335,9 @@ def webhook():
             print(f"➡️ Próximo estado: {prox}")
             enviar_msg(numero, fluxo[prox]["mensagem"])
         else:
-            # Se a opção for inválida ou o estado foi perdido, reinicia a conversa.
-            print("❌ Opção inválida ou estado perdido. Reiniciando fluxo.")
-            user_states[numero] = "inicio" # Reseta o estado
-            mensagem_inicial = fluxo["inicio"]["mensagem"]
-            enviar_msg(numero, "Opção inválida. Vamos tentar de novo do começo, ok?\n\n" + mensagem_inicial)
+            # Se a opção for inválida, apenas reenvia o menu atual.
+            print("❌ Opção inválida. Reenviando menu atual.")
+            enviar_msg(numero, "Opção inválida. Por favor, escolha uma das opções abaixo:\n\n" + no["mensagem"])
 
     except Exception as e:
         print(f"🚨 Erro crítico no processamento do webhook: {e}")
