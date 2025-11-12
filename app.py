@@ -52,7 +52,11 @@ fluxo = {
             "2️⃣ Diferença PF vs PJ\n"
             "3️⃣ Orçamento para abertura de empresa"
         ),
-        "opcoes": {}
+        "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
+            "3": "especialista"
+        }
     },
     "medico_pf": {
         "mensagem": (
@@ -61,7 +65,11 @@ fluxo = {
             "2️⃣ Como abrir CNPJ para reduzir impostos\n"
             "3️⃣ Já tenho CNPJ mas não sei se pago corretamente"
         ),
-        "opcoes": {}
+        "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
+            "3": "especialista"
+        }
     },
     "medico_cnpj": {
         "mensagem": (
@@ -71,6 +79,8 @@ fluxo = {
             "3️⃣ Quero trocar de contador"
         ),
         "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
             "3": "trocar_contador"
         }
     },
@@ -108,7 +118,11 @@ fluxo = {
             "2️⃣ Como funciona o Carnê-Leão?\n"
             "3️⃣ Orçamento para abrir CNPJ"
         ),
-        "opcoes": {}
+        "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
+            "3": "especialista"
+        }
     },
     "dentista_cnpj": {
         "mensagem": (
@@ -118,6 +132,8 @@ fluxo = {
             "3️⃣ Quero trocar de contador"
         ),
         "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
             "3": "trocar_contador"
         }
     },
@@ -155,7 +171,11 @@ fluxo = {
             "2️⃣ Como declarar recebimentos de planos\n"
             "3️⃣ Orçamento para abrir CNPJ"
         ),
-        "opcoes": {}
+        "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
+            "3": "especialista"
+        }
     },
     "fisio_cnpj": {
         "mensagem": (
@@ -165,6 +185,8 @@ fluxo = {
             "3️⃣ Quero trocar de contador"
         ),
         "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
             "3": "trocar_contador"
         }
     },
@@ -175,7 +197,11 @@ fluxo = {
             "2️⃣ Melhor forma de contratar equipe\n"
             "3️⃣ Assessoria em gestão financeira"
         ),
-        "opcoes": {}
+        "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
+            "3": "especialista"
+        }
     },
 
     # ---------------- PSICÓLOGOS ----------------
@@ -199,7 +225,11 @@ fluxo = {
             "2️⃣ Simulação: PF vs PJ\n"
             "3️⃣ Como declarar no Carnê-Leão"
         ),
-        "opcoes": {}
+        "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
+            "3": "especialista"
+        }
     },
     "psico_cnpj": {
         "mensagem": (
@@ -209,6 +239,8 @@ fluxo = {
             "3️⃣ Quero trocar de contador"
         ),
         "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
             "3": "trocar_contador"
         }
     },
@@ -219,7 +251,11 @@ fluxo = {
             "2️⃣ Melhor modelo de sociedade\n"
             "3️⃣ Organização financeira do consultório"
         ),
-        "opcoes": {}
+        "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
+            "3": "especialista"
+        }
     },
 
     # ---------------- FLUXO COMUM ----------------
@@ -230,7 +266,11 @@ fluxo = {
             "2️⃣ Sinto que pago muito imposto\n"
             "3️⃣ Atendimento e comunicação ruins"
         ),
-        "opcoes": {}
+        "opcoes": {
+            "1": "especialista",
+            "2": "especialista",
+            "3": "especialista"
+        }
     },
     "especialista": {
         "mensagem": "Ok! Vou te direcionar para um especialista humano agora 👨‍💼",
